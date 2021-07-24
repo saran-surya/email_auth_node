@@ -15,18 +15,21 @@ dotenv.config({
 });
 
 
-// router for the server
-const router = require('./routes/route.js');
 
 
+// server configurations
+
+app.use(helmet());
 app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet());
+
+// router for the server
+const router = require('./routes/route.js');
+app.use('/', router);
 
 const port = process.env.PORT || 5000;
-
-app.use('/', router);
 
 app.listen(port, ()=>{
     console.log('server started');
