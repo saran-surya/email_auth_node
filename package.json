@@ -4,7 +4,7 @@
   "description": "This package helps building a production ready server for OTP verification",
   "main": "index.js",
   "bin": {
-    "email-auth": "./bin/cli.js"
+    "email-auth-node": "./bin/cli.js"
   },
   "scripts": {
     "dev": "nodemon index.js"

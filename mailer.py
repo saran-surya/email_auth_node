@@ -39,10 +39,7 @@ with open("template.html", "r") as template:
 html += f'Please find your OTP for logging into <b>{CompanyName}</b>'
 html += f'<h2>{otp}</h2>\n'
 
-if(sys.argv[1] == 'node'):
-    html += f'</div>\n<br>\n<a href="https://www.npmjs.com/package/two-step-auth" target="_blank" rel="noopener noreferrer">\n<div class="closing-banner">\nThis mail was sent with the help of two_step_auth\n</div>\n</a>\n</div>\n</body>\n</html>'
-else:
-    html += f'</div>\n<br>\n<a href="https://pub.dev/packages/email_auth" target="_blank" rel="noopener noreferrer">\n<div class="closing-banner">\nThis mail was sent with the help of email_auth\n</div>\n</a>\n</div>\n</body>\n</html>'
+html += f'</div>\n<br>\n<a href="https://pub.dev/packages/email_auth" target="_blank" rel="noopener noreferrer">\n<div class="closing-banner">\nThis mail was sent with the help of email_auth\n</div>\n</a>\n</div>\n</body>\n</html>'
 
 message = MIMEMultipart('alternative')
 message['Subject'] = f"Login OTP for {CompanyName}"

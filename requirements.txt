@@ -3,7 +3,6 @@ asgiref==3.2.3
 astroid==2.3.3
 autopep8==1.5.3
 certifi==2019.11.28
-certificate-gen==0.2
 chardet==3.0.4
 colorama==0.4.3
 distlib==0.3.1
@@ -16,7 +15,6 @@ keyring==21.2.1
 mccabe==0.6.1
 packaging==20.4
 pbr==5.4.5
-Pillow==7.2.0
 pkginfo==1.5.0.1
 pycodestyle==2.6.0
 Pygments==2.6.1
