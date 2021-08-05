@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 const readline = require("readline");
-const crypto = require('crypto')
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
-let API_KEY;
 
+
+// Globals
 let mailID;
 let password;
 let SERVER_API_KEY;
+const mailPort = 587;
 
-const mailPort = 587
+// Local
+let API_KEY;
+
 
 function displayHelp() {
     console.log("----------------- Package Help -----------------\n")
@@ -52,66 +58,144 @@ function validateEmail(email) {
     return re.test(String(email).toLowerCase());
 }
 
-console.log(process.argv)
+function createConfig(reader) {
+    return new Promise((resolve, reject) => {
+        let writer = fs.createWriteStream(path.resolve(__dirname, "../", "config.env"))
+        writer.write(`mailID = ${mailID.toString()}\n`)
+        writer.write(`password = ${password}\n`)
+        writer.write(`mailPort = 587\n`)
+        // Closing the read stream
+        writer.write(`SERVER_API_KEY = ${SERVER_API_KEY}\n\n# link_reference = ".../dart/auth/{mailID}?key={API_KEY}`, () => {
+            reader.close()
+        })
 
-function main() {
+        writer.close()
+        resolve()
+    })
+
+}
+
+function verifyHTML() {
+    return new Promise((resolve, reject) => {
+        try {
+            let htmlData = fs.readFileSync(path.resolve(__dirname, "../", "index.html"))
+            const htmlRegEx = /({.*})/gm
+            const verificationParams = ['{style}', '{CompanyName}', '{OTP}'].toString()
+            if (htmlData.toString().match(htmlRegEx).toString() == verificationParams) {
+                console.log("email-auth-node >> verification success...")
+                resolve(true)
+            } else {
+                console.log("\n\temail-auth-node >> The HTML has missing parameters")
+                throw new Error("")
+            }
+        } catch (error) {
+            console.log("Error on run time")
+            process.exit(0)
+        }
+    })
+}
+
+
+function init() {
+    return new Promise((resolve, reject) => {
+
+        const read_line_interface = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        read_line_interface.question("\nemail-auth-node >> Kindly enter your email ID : ", function (mailId) {
+            // Pre validation checks
+            if (mailId.length < 5 || !validateEmail(mailId)) {
+                console.log("Please enter a valid Email ID...")
+                read_line_interface.close();
+            }
+            read_line_interface.question("email-auth-node >> Kindly enter your password : ", function (pwd) {
+                // prevalidation checks
+                if (pwd.length < 3) {
+                    console.log("email-auth-node >> Please enter a valid password...")
+                    read_line_interface.close()
+                }
+
+                // Assignment to global variables
+                mailID = mailId;
+                password = pwd;
+
+                read_line_interface.question("email-auth-node >> Kindly create a server key // press Enter to automatically generate a key : ", async function (key) {
+                    if (key == '') {
+                        console.log("email-auth-node >> Generating server key...")
+                        // generate a new server key
+                        API_KEY = makeid(6)
+                        // hash the generated server key
+                        SERVER_API_KEY = sha256(API_KEY)
+                    } else if (key.split(" ").length > 1 || /[^\w\*]/.test(key) || key.length < 1) {
+                        // the server key has spaces in it or contains special characters.
+                        console.log("\nemail-auth-node >> Create a server key without spaces and special characters")
+                        read_line_interface.close();
+                    }
+                    else {
+                        console.log(`\nemail-auth-node >> '${key}' will be used as your server key`)
+                        API_KEY = key
+                        SERVER_API_KEY = sha256(API_KEY)
+                    }
+
+
+                    console.log(`\nemail-auth-node >>  Configurations made \n\t ** your server key = ${API_KEY}`);
+                    await createConfig(read_line_interface)
+                    resolve()
+                })
+            });
+        });
+
+        read_line_interface.on("close", function () {
+            process.exit(0);
+        });
+    })
+
+}
+
+
+/**
+ * The main function for the CLI
+ * @returns void 
+ */
+async function main() {
     // Display help and quit the process if the help command is present
     if (process.argv.slice(2).length == 0 || process.argv.slice(2).includes("--help") || process.argv.slice(2).includes("-h")) {
         displayHelp()
         return
     }
 
+
+    const defaultOptions = ["generate", "verify"]
+
     // Quit the process if there are unknown or extra options present
-    if (process.argv.slice(2).length > 1) {
-        console.log("email-auth-node >> Extra unknown options present")
-        displayHelp()
-        return
+    process.argv.slice(2).forEach(element => {
+        if (defaultOptions.indexOf(element) < 0) {
+            displayHelp()
+            return
+        }
+    });
+
+    let verifyFlag = false
+    if (process.argv.slice(2).includes(defaultOptions[1])) {
+        await verifyHTML()
+        verifyFlag = !verifyFlag
     }
 
-
-    const read_line_interface = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    read_line_interface.question("Kindly enter your email ID : ", function (mailId) {
-        if (mailId.length < 5 && !validateEmail(mailID)) {
-            console.log("Please enter a valid Email ID...")
-            read_line_interface.close();
+    if (process.argv.slice(2).includes(defaultOptions[0])) {
+        if (!verifyFlag) {
+            await verifyHTML()
         }
-        read_line_interface.question("Kindly enter your password : ", function (pwd) {
-            if (pwd.length < 3) {
-                console.log("Please enter a valid password...")
-                read_line_interface.close()
-            }
-            mailID = mailId;
-            password = pwd;
+        await init()
+    }
 
-            read_line_interface.question("Kindly create a server key // press Enter to automatically generate a key : ", function (key) {
-                if (key == '') {
-                    console.log("Generating server key...")
-                    API_KEY = makeid(6)
-                    SERVER_API_KEY = sha256(API_KEY)
-                } else {
-                    console.log(`email-auth-node >> '${key}' will be used as your server key`)
-                    API_KEY = key
-                    SERVER_API_KEY = sha256(API_KEY)
-                }
-                console.log(API_KEY)
-                console.log(SERVER_API_KEY)
-                console.log("\nemail-auth-node >> Generating server configuration...");
-                read_line_interface.close();
-            })
-        });
-    });
-
-    read_line_interface.on("close", function () {
-        process.exit(0);
-    });
 
 
 }
 
+
+// Calling the main function
 main()
 
 

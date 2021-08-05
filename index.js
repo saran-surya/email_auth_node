@@ -15,8 +15,6 @@ dotenv.config({
 });
 
 
-
-
 // server configurations
 
 app.use(helmet());
