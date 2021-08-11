@@ -109,5 +109,6 @@ dist
 
 
 test.js
+template.html
 
 tailwind.config.js
