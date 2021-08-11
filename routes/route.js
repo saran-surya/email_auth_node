@@ -78,10 +78,10 @@ router.get("/dart/auth/:mail", async (req, res) => {
         const { key, otpLength } = req.query;
         let { CompanyName } = req.query;
 
-        console.log("------------------ Server Key Verification ------------------------")
-        console.log(key)
-        console.log(sha256(key))
-        console.log(process.env.SERVER_API_KEY)
+        console.log("-------- Server Key Verification ---------")
+        // console.log(key)
+        // console.log(sha256(key))
+        // console.log(process.env.SERVER_API_KEY)
         console.log(process.env.SERVER_API_KEY == sha256(key))
         console.log("------------------------------------------")
 
@@ -101,7 +101,6 @@ router.get("/dart/auth/:mail", async (req, res) => {
 
         if (validateEmail(mail) && mail.length > 0) {
             let OTP = generateOtp(otpLength ? otpLength : null);
-            console.log(OTP)
             mailData = spawn('python', ['mailer.py', 'dart', mail, OTP, CompanyName])
             mailData.stdout.on('data', async (data) => {
                 const readerData = await data.toString();
