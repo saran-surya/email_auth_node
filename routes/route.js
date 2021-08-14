@@ -64,6 +64,13 @@ router.get("/test/fail", async (req, res) => {
     });
 })
 
+
+router.get("/test/dart", async(req, res)=>{
+    res.status(200).json({
+        "message" : "success"
+    })
+})
+
 router.get('/', async (req, res) => {
     res.send("Hello Welcome to the homepage");
 })
@@ -139,6 +146,8 @@ router.get("/dart/auth/:mail", async (req, res) => {
         });
     }
 })
+
+
 
 
 
