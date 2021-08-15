@@ -80,7 +80,7 @@ function createConfig(reader) {
         writer.write(`password = ${password}\n`)
         writer.write(`mailPort = 587\n`)
         // Closing the read stream
-        writer.write(`SERVER_API_KEY = ${SERVER_API_KEY}\n\n# ------ Flutter guidlines ------\n# In your Flutter project create a config.env file in the lib folder\n# server = server url \n# key = ${API_KEY}`, () => {
+        writer.write(`SERVER_API_KEY = ${SERVER_API_KEY}\n\n# ------ Flutter guidelines ------\n# In your Flutter project create a auth.config.dart file in the root of the lib folder\n\n# var remoteServerConfig = {"server" = "server url", "serverKey" = "${API_KEY}"};`, () => {
             reader.close()
         })
 
