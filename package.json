@@ -1,6 +1,6 @@
 {
   "name": "email-auth-node",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "This package helps building a production ready server for OTP verification",
   "main": "index.js",
   "bin": {
