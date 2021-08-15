@@ -18,7 +18,7 @@ let mailData = "";
 
 
 /**
- * Returns a hashed string value
+ * Returns a hashed string value : encodes SHA256
  * @param {String} data : Proceed with a string 
  * @returns {String} Hashed string
  */
