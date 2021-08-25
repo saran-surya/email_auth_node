@@ -184,6 +184,12 @@ async function main() {
             displayHelp()
             return
         }
+        
+        // Added version support
+        if (process.argv.slice(2).includes("--version") || process.argv.slice(2).includes("-v")) {
+            console.log(">> email-auth-node >> version : 0.0.1")
+            return
+        }
 
 
         const defaultOptions = ["--generate", "--verify"]
