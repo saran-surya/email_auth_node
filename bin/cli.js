@@ -75,12 +75,15 @@ function validateEmail(email) {
 
 function createConfig(reader) {
     return new Promise((resolve, reject) => {
-        let writer = fs.createWriteStream(path.resolve(__dirname, "../", "config.env"))
+        let writer = fs.createWriteStream(path.resolve(__dirname, "../", "custom", "config.env"))
         writer.write(`mailID = ${mailID.toString()}\n`)
         writer.write(`password = ${password}\n`)
         writer.write(`mailPort = 587\n`)
         // Closing the read stream
-        writer.write(`SERVER_API_KEY = ${SERVER_API_KEY}\n\n# ------ Flutter guidelines ------\n# In your Flutter project create a auth.config.dart file in the root of the lib folder\n\n# var remoteServerConfig = {"server" = "server url", "serverKey" = "${API_KEY}"};`, () => {
+        writer.write(`SERVER_API_KEY = ${SERVER_API_KEY}\n\n# ------ Flutter guidelines ------
+                    \n# In your Flutter project create a auth.config.dart file in the root of the lib folder,
+                    \n# copy the following line into the file, and pass it to the email_auth package.    
+                    \n# var remoteServerConfig = {"server" = "server url", "serverKey" = "${API_KEY}"};`, () => {
             reader.close()
         })
 
@@ -93,7 +96,7 @@ function createConfig(reader) {
 function verifyHTML() {
     return new Promise((resolve, reject) => {
         try {
-            let htmlData = fs.readFileSync(path.resolve(__dirname, "../", "index.html"))
+            let htmlData = fs.readFileSync(path.resolve(__dirname, "../", "custom", "index.html"))
             const htmlRegEx = /({.*})/gm
             const verificationParams = ['{style}', '{CompanyName}', '{OTP}'].toString()
             if (htmlData.toString().match(htmlRegEx).toString() == verificationParams) {
@@ -184,7 +187,7 @@ async function main() {
             displayHelp()
             return
         }
-        
+
         // Added version support
         if (process.argv.slice(2).includes("--version") || process.argv.slice(2).includes("-v")) {
             console.log(">> email-auth-node >> version : 0.0.1")
