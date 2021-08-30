@@ -83,7 +83,7 @@ function createConfig(reader) {
         writer.write(`SERVER_API_KEY = ${SERVER_API_KEY}\n\n# ------ Flutter guidelines ------
                     \n# In your Flutter project create a auth.config.dart file in the root of the lib folder,
                     \n# copy the following line into the file, and pass it to the email_auth package.    
-                    \n# var remoteServerConfig = {"server" = "server url", "serverKey" = "${API_KEY}"};`, () => {
+                    \n# var remoteServerConfiguration = {"server" : "server url", "serverKey" : "${API_KEY}"};`, () => {
             reader.close()
         })
 
