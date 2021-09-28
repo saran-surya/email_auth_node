@@ -97,7 +97,8 @@ router.get("/dart/auth/:mail", async (req, res) => {
         if (!checkServerKey(key)) {
             res.status(404).json({
                 success: false,
-                message: "Server Key does not match"
+                message: "Server Key does not match",
+                error: "Server Key does not match"
             })
             console.log(":: Server Key does not match")
             return
@@ -122,7 +123,8 @@ router.get("/dart/auth/:mail", async (req, res) => {
                         status: 404,
                         mail: mail,
                         success: false,
-                        message: "Unable to send mail"
+                        message: "Unable to send mail",
+                        error: "Unable to send mail"
                     })
                 } else {
                     res.json({
