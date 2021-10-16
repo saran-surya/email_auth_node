@@ -124,7 +124,7 @@ router.get("/dart/auth/:mail", async (req, res) => {
                         mail: mail,
                         success: false,
                         message: "Unable to send mail",
-                        error: "Unable to send mail"
+                        error: readerData
                     })
                 } else {
                     res.json({
@@ -147,7 +147,7 @@ router.get("/dart/auth/:mail", async (req, res) => {
         console.log(error)
         console.log(error.message);
         res.json({
-            status: 404,
+            status: 501,
             error: "Server error",
             success: false
         });
@@ -158,4 +158,4 @@ router.get("/dart/auth/:mail", async (req, res) => {
 
 
 
-module.exports = router
+module.exports = router;
