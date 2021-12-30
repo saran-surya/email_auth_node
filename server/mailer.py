@@ -81,6 +81,7 @@ try:
 
     message = MIMEMultipart('alternative')
     message['Subject'] = f"Login OTP for {CompanyName}"
+    message['to'] = f"{toMail}"
     converted = MIMEText(html, 'html')
     message.attach(converted)
     server = smtplib.SMTP('smtp.gmail.com', port)
