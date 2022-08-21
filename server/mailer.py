@@ -23,10 +23,11 @@ try:
 
     OrgMail = os.getenv("mailID")
     OrgPass = os.getenv("password")
+    SMTPServer = os.getenv("smtp_server")
 
 
     port = os.getenv("mailPort")
-    fromMail = "Auth@gmail.com"
+    fromMail = OrgMail
     toMail = sys.argv[2]
     otp = sys.argv[3]
     CompanyName = ""
@@ -80,10 +81,11 @@ try:
     #     template.writelines(html)
 
     message = MIMEMultipart('alternative')
+    message["From"] = fromMail
     message['Subject'] = f"Login OTP for {CompanyName}"
     converted = MIMEText(html, 'html')
     message.attach(converted)
-    server = smtplib.SMTP('smtp.gmail.com', port)
+    server = smtplib.SMTP(SMTPServer, port)
     server.starttls()
     try:
         server.login(OrgMail, OrgPass)
