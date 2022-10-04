@@ -1,6 +1,7 @@
 # email_auth for production.
 ## Node Extension to host your apps to a server for optimised production speeds using email_auth.
-
+# NOTE:
+  - KINDLY USE TEST SERVER, EXPECT A PATCH IN THE COMING WEEKS
 # Visit the page here for the detailed steps 📌 <br/>[detailed setup of email-auth-node](https://saran-surya.github.io/email-auth-node/)
 
 ## Steps : summary
