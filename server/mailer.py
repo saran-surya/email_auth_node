@@ -83,7 +83,8 @@ try:
     message['Subject'] = f"Login OTP for {CompanyName}"
     converted = MIMEText(html, 'html')
     message.attach(converted)
-    server = smtplib.SMTP('smtp.gmail.com', port)
+    # server = smtplib.SMTP('smtp.gmail.com', port)
+    server = smtplib.SMTP('smtp.office365.com', port)
     server.starttls()
     try:
         server.login(OrgMail, OrgPass)
