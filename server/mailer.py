@@ -1,20 +1,20 @@
+"""
+Module sends the mail as a helper for the node spawn process
+"""
+
 # path module
 from pathlib import Path
 
 # SMTP server essentials
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
 import smtplib
-import ssl
-import email
 
 # Configuration section
 import sys
-import dotenv
 import os
 import re
+import dotenv
 
 try:
 
@@ -26,74 +26,74 @@ try:
 
 
     port = os.getenv("mailPort")
-    fromMail = "Auth@gmail.com"
-    toMail = sys.argv[2]
-    otp = sys.argv[3]
-    CompanyName = ""
+    FROM_MAIL = "Medcore.gp@outlook.com"
+    TO_MAIL = sys.argv[2]
+    OTP = sys.argv[3]
+    COMPANY_NAME = ""
     try:
-        CompanyName = sys.argv[4]
+        COMPANY_NAME = sys.argv[4]
     except IndexError:
         print("No company name present")
-        CompanyName = ""
+        COMPANY_NAME = ""
 
     # Create the HTML file
-    html = ""
-    styleSheet = ""
+    HTML = ""
+    STYLESHEET = ""
 
-    with open(os.path.join(Path.cwd(), "custom", "style.css"), "r") as template:
-        styleSheet = template.readlines()
+    with open(os.path.join(Path.cwd(), "custom", "style.css"), "r", encoding="utf-8") as template:
+        STYLESHEET = template.readlines()
 
-    with open(os.path.join(Path.cwd(), "custom", "index.html"), "r") as template:
-        for line in template:
-            regex = r"({.*})"
+    with open(os.path.join(Path.cwd(), "custom", "index.html"), "r", encoding="utf-8") as template:
+        for LINE in template:
+            REGEX = r"({.*})"
 
             # Checking the presence of the style element
-            if ("{style}" in re.findall(regex, line)):
-                line += "\n<style>\n"
-                line += "".join(styleSheet)
-                line += "\n</style>\n"
+            if ("{style}" in re.findall(REGEX, LINE)):
+                LINE += "\n<style>\n"
+                LINE += "".join(STYLESHEET)
+                LINE += "\n</style>\n"
 
             # Check the presence of the company name
-            if ("{CompanyName}" in re.findall(regex, line)):
-                splitLine = line.split()
-                for element in splitLine:
-                    if(re.match(regex, element)):
-                        # print(splitLine.index(element))
-                        splitLine[splitLine.index(element)] = CompanyName
-                line = " ".join(splitLine)
+            if ("{COMPANY_NAME}" in re.findall(REGEX, LINE)):
+                splitLINE = LINE.split()
+                for element in splitLINE:
+                    if(re.match(REGEX, element)):
+                        # print(splitLINE.index(element))
+                        splitLINE[splitLINE.index(element)] = COMPANY_NAME
+                LINE = " ".join(splitLINE)
 
             # Checking the presence of the OTP
-            if ("{OTP}" in re.findall(regex, line)):
-                splitLine = line.split()
-                for element in splitLine:
-                    if(re.match(regex, element)):
-                        splitLine[splitLine.index(element)] = otp
-                line = " ".join(splitLine)
+            if ("{OTP}" in re.findall(REGEX, LINE)):
+                splitLINE = LINE.split()
+                for element in splitLINE:
+                    if(re.match(REGEX, element)):
+                        splitLINE[splitLINE.index(element)] = OTP
+                LINE = " ".join(splitLINE)
 
-            # Creating the html
-            if("</body>" in line):
+            # Creating the HTML
+            if ("</body>" in LINE) :
                 # Adding the footer for the package
-                html += f'<br/><a href="https://pub.dev/packages/email_auth" target="_blank" rel="noopener noreferrer">Sent using email_auth</a>'
-            html = html + line if(html != "") else line
+                HTML += '<br/><a href="https://pub.dev/packages/email_auth" target="_blank" rel="noopener noreferrer">Sent using email_auth</a>'
+            HTML = HTML + LINE if(HTML != "") else LINE
 
-    # with open("template.html", "w") as template:
-    #     template.writelines(html)
+    # with open("template.HTML", "w") as template:
+    #     template.writeLINEs(HTML)
 
     message = MIMEMultipart('alternative')
-    message['Subject'] = f"Login OTP for {CompanyName}"
-    converted = MIMEText(html, 'html')
+    message['Subject'] = f"Login OTP for {COMPANY_NAME} is {OTP}"
+    converted = MIMEText(HTML, 'HTML')
     message.attach(converted)
     # server = smtplib.SMTP('smtp.gmail.com', port)
     server = smtplib.SMTP('smtp.office365.com', port)
     server.starttls()
     try:
         server.login(OrgMail, OrgPass)
-        server.sendmail(fromMail, [toMail], message.as_string())
+        server.sendmail(FROM_MAIL, [TO_MAIL], message.as_string())
         server.quit()
-        print("success sent mail")
+        print("PYTHON SERVER :: success sent mail")
     except Exception as error:
         print(error)
-        print("Server error cannot send mail : section 1")
+        print("PYTHON SERVER :: Server error -> Mailing section")
     finally:
         sys.exit(0)
 except Exception as error:
