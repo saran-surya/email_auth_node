@@ -66,13 +66,26 @@ router.get("/test/fail", async (req, res) => {
 })
 
 
+// Test the basic connection for flutter integration
 router.get("/test/dart", async (req, res) => {
-    res.status(200).json({
-        "message": "success"
-    })
+    try {
+        res.status(200).json({
+            "status" : "true",
+            "message": "test connection to server is successful"
+        })
+    } catch (error) {
+        // TODO : Move errors to log
+        console.log(error)
+        res.status(500).json({
+            "status" : "false",
+            "message" : `Server error : ${error.message}`
+        })
+    }
+ 
 })
 
 router.get('/', async (req, res) => {
+    // TODO : create  agood home page for admin management if possible
     res.send("Hello Welcome to the homepage");
 })
 
