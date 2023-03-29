@@ -7,7 +7,7 @@
     "email-auth-node": "./bin/cli.js"
   },
   "scripts": {
-    "start": "node server/index.js",
+    "start": "node server/index.js %npm_config_log%",
     "dev": "nodemon server/index.js"
   },
   "repository": {

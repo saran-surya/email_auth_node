@@ -10,6 +10,7 @@ const { spawn } = require('child_process');
 // environment configuration
 const dotenv = require('dotenv');
 const path = require("path");
+const LOGGER = require("../logger");
 dotenv.config({
     path: path.resolve(__dirname, "../", "../", "custom", "config.env")
 });
@@ -86,6 +87,8 @@ router.get("/test/dart", async (req, res) => {
 
 router.get('/', async (req, res) => {
     // TODO : create  agood home page for admin management if possible
+
+    LOGGER.INFO(`ROUTE : "/"`)
     res.send("Hello Welcome to the homepage");
 })
 
@@ -93,6 +96,7 @@ router.get('/', async (req, res) => {
 // Takes care of sending the mails
 router.get("/dart/auth/:mail", async (req, res) => {
     try {
+        LOGGER.INFO(`ROUTE : "/dart/auth/:mail"`)
         const { mail } = req.params;
 
         // Handle the server verification
@@ -120,10 +124,12 @@ router.get("/dart/auth/:mail", async (req, res) => {
        
 
         if (CompanyName == undefined || CompanyName.length <= 0) {
+            LOGGER.WARN(`sessionName is not defined :: Setting ""`)
             CompanyName = "";
         }
 
         if (validateEmail(mail) && mail.length > 0) {
+            LOGGER.INFO("Mail validation success")
             let OTP = generateOtp(otpLength ? otpLength : null);
             // console.log(path.resolve(__dirname, "../", 'mailer.py'))
             // return false
