@@ -36,15 +36,17 @@ class LOGGER {
     LOG_FILE_PATH;
 
     /**
-     * initializes the log file
+     * initializes the LOGGER and the LOG file
      * @param {string} filePath
-     * @param {boolean} createNew 
+     * @param {boolean} replaceFile 
      */
-    static init() {
+    static init(replaceFile = true) {
         this.LOG_FILE_PATH = path.join(__dirname, "../", "server.log");
 
         // Deleting old log file (Creating a new log for execution)
-        if (fs.existsSync(this.LOG_FILE_PATH)) fs.rmSync(this.LOG_FILE_PATH)
+        if (fs.existsSync(this.LOG_FILE_PATH)) {
+            if (replaceFile) fs.rmSync(this.LOG_FILE_PATH)
+        }
 
         this.INFO("INITIALIZATION : LOGGER INITIALISED SUCCESSFULLY")
     }

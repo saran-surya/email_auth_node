@@ -2,8 +2,11 @@ const express = require('express');
 const path = require('path');
 const LOGGER = require('./logger');
 
-LOGGER.init()
+LOGGER.init(false)
 
+/**
+ * Main method to start express server
+ */
 function main() {
     try {
         LOGGER.INFO("Starting express server")
@@ -36,8 +39,9 @@ function main() {
         const port = process.env.PORT || 5000;
 
         app.listen(port, () => {
-            console.log('server started');
-            console.log('port', port);
+            LOGGER.INFO(`STARTING NODE JS SERVER :: ON PORT :: ${port}`)
+            // console.log('server started');
+            // console.log('port', port);
         });
     } catch (e) {
         LOGGER.ERROR(e)

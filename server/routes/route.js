@@ -15,6 +15,8 @@ dotenv.config({
     path: path.resolve(__dirname, "../", "../", "custom", "config.env")
 });
 
+const nodeMailer = require("nodemailer");
+
 
 let mailData = "";
 
@@ -51,13 +53,17 @@ function validateEmail(email) {
 
 function checkServerKey(serverKey) {
     if (!serverKey) {
+        LOGGER.ERROR(`Server key is not valid :: Recieved ${serverKey}`)
         return false
     }
-    return (sha256(serverKey) == process.env.SERVER_API_KEY)
+    var keyVerificationBuffer = sha256(serverKey) == process.env.SERVER_API_KEY
+    LOGGER.INFO("Server Key valid")
+    return (keyVerificationBuffer)
 }
 
 
 router.get("/test/fail", async (req, res) => {
+    LOGGER.WARN("Accessing test route for verification of failure request")
     res.json({
         status: 404,
         mail: "test Phase",
@@ -70,19 +76,20 @@ router.get("/test/fail", async (req, res) => {
 // Test the basic connection for flutter integration
 router.get("/test/dart", async (req, res) => {
     try {
+        LOGGER.INFO("Accessing test route : /test/dart")
         res.status(200).json({
-            "status" : "true",
+            "status": "true",
             "message": "test connection to server is successful"
         })
     } catch (error) {
-        // TODO : Move errors to log
-        console.log(error)
+        // console.log(error)
+        LOGGER.ERROR(`Error performing operation of route /test/dart : ${error.message}`)
         res.status(500).json({
-            "status" : "false",
-            "message" : `Server error : ${error.message}`
+            "status": "false",
+            "message": `Server error : ${error.message}`
         })
     }
- 
+
 })
 
 router.get('/', async (req, res) => {
@@ -103,13 +110,14 @@ router.get("/dart/auth/:mail", async (req, res) => {
         const { key, otpLength } = req.query;
         let { CompanyName } = req.query;
 
-        
-        console.log("-------- Server Key Verification ---------")
+
+        LOGGER.INFO("Performing server key verification")
+        // console.log("-------- Server Key Verification ---------")
         // console.log(key)
         // console.log(sha256(key))
         // console.log(process.env.SERVER_API_KEY)
-        console.log(checkServerKey(key))
-        console.log("------------------------------------------")
+        // console.log(checkServerKey(key))
+        // console.log("------------------------------------------")
 
         if (!checkServerKey(key)) {
             res.status(404).json({
@@ -117,14 +125,15 @@ router.get("/dart/auth/:mail", async (req, res) => {
                 message: "Server Key does not match",
                 error: "Server Key does not match"
             })
-            console.log(":: Server Key does not match")
+            // console.log(":: Server Key does not match")
+            LOGGER.ERROR("Server key not valid")
             return
         }
 
-       
+
 
         if (CompanyName == undefined || CompanyName.length <= 0) {
-            LOGGER.WARN(`sessionName is not defined :: Setting ""`)
+            LOGGER.WARN(`sessionName is not defined :: Setting value to -> ""`)
             CompanyName = "";
         }
 
@@ -133,11 +142,18 @@ router.get("/dart/auth/:mail", async (req, res) => {
             let OTP = generateOtp(otpLength ? otpLength : null);
             // console.log(path.resolve(__dirname, "../", 'mailer.py'))
             // return false
+            LOGGER.INFO("Calling python process for sending emails")
+            
+            // TODO : Add migration to NODE JS (100%)
+            // sendNodeMail(mail, OTP)
+            // return
             mailData = spawn('python', [path.resolve(__dirname, "../", 'mailer.py'), 'dart', mail, OTP, CompanyName])
             mailData.stdout.on('data', async (data) => {
                 const readerData = await data.toString();
-                console.log(data.toString());
+                // console.log(data.toString());
+                LOGGER.INFO(readerData);
                 if (readerData.includes('error')) {
+                    LOGGER.ERROR(`Error sending email`, readerData)
                     res.json({
                         status: 404,
                         mail: mail,
@@ -146,6 +162,7 @@ router.get("/dart/auth/:mail", async (req, res) => {
                         error: readerData
                     })
                 } else {
+                    LOGGER.INFO(`Successfully sent email : ${mail.slice(0, 3)}... : OTP : ${OTP.toString().slice(0, 3)}...`)
                     res.json({
                         status: 200,
                         mail: mail,
@@ -155,6 +172,7 @@ router.get("/dart/auth/:mail", async (req, res) => {
                 }
             })
         } else {
+            LOGGER.WARN("Provided email ID is not valid", mail)
             res.json({
                 status: 404,
                 mail: mail,
@@ -163,8 +181,9 @@ router.get("/dart/auth/:mail", async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error)
-        console.log(error.message);
+        // console.log(error)
+        // console.log(error.message);
+        LOGGER.ERROR("Server error", error.message)
         res.json({
             status: 501,
             error: "Server error",
@@ -174,7 +193,26 @@ router.get("/dart/auth/:mail", async (req, res) => {
 })
 
 
+/**
+ * Test function to check feasiblity of NODE JS conversion with NODE Mailer and plugins
+ * @param {string} mail Email ID of the reciever
+ * @param {number} OTP The OTP to be sent to the reciever
+ */
+function sendNodeMail(mail, OTP){
+    var nodeOutlook = require("nodejs-nodemailer-outlook")
+    nodeOutlook.sendEmail({
+        auth: {
+            user: process.env.mailID,
+            pass: process.env.password
+        },
+        from: 'sender@outlook.com',
+        to: mail,
+        subject: 'This is TEST EMIAL',
+        text: "This is OTP" + OTP,
 
-
+        onError : (e) => console.log(e),
+        onSuccess : (i) => console.log(i)
+    })
+}
 
 module.exports = router;
