@@ -1,7 +1,8 @@
 module.exports = {
   // mode : "jit",
   purge: [
-    "./index.html"
+    "./custom/index.html",
+    "./server/static/index.html"
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {
