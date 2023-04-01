@@ -15,8 +15,6 @@ dotenv.config({
     path: path.resolve(__dirname, "../", "../", "custom", "config.env")
 });
 
-const nodeMailer = require("nodemailer");
-
 
 let mailData = "";
 
@@ -96,7 +94,8 @@ router.get('/', async (req, res) => {
     // TODO : create  agood home page for admin management if possible
 
     LOGGER.INFO(`ROUTE : "/"`)
-    res.send("Hello Welcome to the homepage");
+    // res.send("Hello Welcome to the homepage");
+    res.sendFile("static/index.html", {root : path.join(__dirname, "../")})
 })
 
 

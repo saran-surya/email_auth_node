@@ -32,6 +32,8 @@ function main() {
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
 
+        app.use(express.static(path.join(__dirname, "static")))
+
         // router for the server
         const router = require('./routes/route');
         app.use('/', router);
