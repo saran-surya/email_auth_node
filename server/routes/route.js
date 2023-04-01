@@ -15,8 +15,6 @@ dotenv.config({
     path: path.resolve(__dirname, "../", "../", "custom", "config.env")
 });
 
-const nodeMailer = require("nodemailer");
-
 
 let mailData = "";
 
